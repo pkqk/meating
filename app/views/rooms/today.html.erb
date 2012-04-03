@@ -1,0 +1,36 @@
+<h1><%= room %></h1>
+<% if false %>
+<%= form_for [room, Booking.new] do |f| %>
+<%= f.text_field :date, :type => 'date' %>
+<%= f.text_field :from, :type => 'time' %>
+<%= f.text_field :to, :type => 'time' %>
+<% end %>
+<% end %>
+
+<% if room.bookings.any? %>
+<table class="timetable">
+  <thead>
+    <tr>
+      <th>Hour</th>
+      <th>Booked by</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% 9.upto(17) do |hour| %>
+      <% (0...60).step(15) do |min| %>
+      <tr>
+        <th><%= "%d:%02d" % [hour,min] %></th>
+        <% if booking = room.booking_for(timespan(hour,min)) %>
+          <% if booking != @booking %>
+            <td class="booked" rowspan="<%= booking.blocks %>"><%= booking.who %></td>
+            <% @booking = booking %>
+          <% end %>
+        <% else %>
+          <td>…</td>
+        <% end %>
+      </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+<% end %>
